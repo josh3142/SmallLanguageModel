@@ -27,7 +27,9 @@ To generate text a pretrained model is required. Simply run
 
 ```python tinystories_inference.py -c experiments/250804_1522_baseline/final_model.pth -p "Lisa and Tim"```
 
-for a model checkpoint saved in `experiments/250804_1522_baseline/final_model.pth` and a story that is supposed to start with `Lisa and Tim`. Further arguments can be parsed in the command line that are given in the script `tinystories_inference.py`.
+for a model checkpoint saved in `experiments/250804_1522_baseline/final_model.pth` and a story that is supposed to start with `Lisa and Tim`. Further arguments can be parsed in the command line that are given in the script `tinystories_inference.py`. Additionally, a checkpoint can downloaded from hugging face automically with 
+
+```python tinystories_inference.py -p "Lisa and Tim"```
 
 Alternatively, you can run the jupyter notebook `tinystory_notebook.ipynb`.
 
