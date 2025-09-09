@@ -7,6 +7,8 @@ import os
 import argparse
 import torch
 
+from huggingface_hub import hf_hub_download
+
 from model.transformer import ModelConfig
 from generation.inference import Inference
 
@@ -22,9 +24,28 @@ model_config = ModelConfig(
     dropout=0.1
 )
 
+
+def get_checkpoint(checkpoint_path: str | None=None):
+    """
+    Returns the path to the checkpoint.
+    If checkpoint_path is None or does not exist, downloads from Hugging Face Hub.
+    """
+    if checkpoint_path is not None and os.path.exists(checkpoint_path):
+        return checkpoint_path
+    
+    print("Checkpoint not found locally. Downloading from Hugging Face Hub...")
+    local_path = hf_hub_download(
+        repo_id="homunkulus/tinystories_small_gpt2",
+        filename="checkpoint_epoch_10.pth"
+    )
+    print(f"Downloaded checkpoint to {local_path}")
+    return local_path
+
 def main():
     parser = argparse.ArgumentParser(description="TinyStories Model Inference")
-    parser.add_argument("--checkpoint", "-c", required=True, help="Path to model checkpoint")
+    parser.add_argument("--checkpoint", "-c", default=None,
+        help=("Path to model checkpoint. If no checkpoint is provided the "
+        "model checkpoint from hugginface is downloaded."))
     parser.add_argument("--device", "-d", default=None, help="Device to use (cuda/cpu)")
     parser.add_argument("--prompt", "-p", help="Single prompt for generation")
     parser.add_argument("--temperature", "-t", type=float, default=0.8, help="Generation temperature")
@@ -41,8 +62,9 @@ def main():
         device = args.device
     print(f"Using device: {device}")
     
+    ckpt = get_checkpoint(args.checkpoint)
     inference = Inference.load_from_checkpoint(
-        checkpoint_path=args.checkpoint, device=device
+        checkpoint_path=ckpt, device=device
     )
 
     # prompt generation
